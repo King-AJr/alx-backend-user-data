@@ -3,6 +3,7 @@
 function called filter_datum
 that returns the log message obfuscated:
 """
+
 from typing import List
 import re
 import logging
@@ -40,4 +41,6 @@ class RedactingFormatter(logging.Formatter):
         """
         format records by redacting sensitive info
         """
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.getMessage(), self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
