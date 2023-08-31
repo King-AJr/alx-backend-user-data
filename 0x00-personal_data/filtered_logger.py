@@ -93,4 +93,3 @@ def main():
 
     cursor.close()
     db.close()
-
