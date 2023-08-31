@@ -7,6 +7,8 @@ that returns the log message obfuscated:
 from typing import List
 import re
 import logging
+from os import environ
+import mysql.connector
 
 PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'ip')
 
@@ -57,3 +59,15 @@ def get_logger() -> logging.Logger:
     stream_handler = logging.StreamHandler()
     formatter = RedactingFormatter()
     return user_data
+
+
+def get_db():
+    db_config = {
+        "host": environ.get("PERSONAL_DATA_DB_HOST", "localhost"),
+        "user": environ.get("PERSONAL_DATA_DB_USERNAME", "root"),
+        "password": environ.get("PERSONAL_DATA_DB_PASSWORD", ""),
+        "database": environ.get("PERSONAL_DATA_DB_NAME")    
+    }
+    connection = mysql.connector.connection.MySQLConnection(**db_config)
+
+    return connection
