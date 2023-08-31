@@ -10,7 +10,7 @@ import logging
 from os import environ
 import mysql.connector
 
-PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'ip')
+PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'name')
 
 
 def filter_datum(
@@ -62,12 +62,25 @@ def get_logger() -> logging.Logger:
 
 
 def get_db():
+    """
+    setting up db connection
+    """
     db_config = {
         "host": environ.get("PERSONAL_DATA_DB_HOST", "localhost"),
         "user": environ.get("PERSONAL_DATA_DB_USERNAME", "root"),
         "password": environ.get("PERSONAL_DATA_DB_PASSWORD", ""),
-        "database": environ.get("PERSONAL_DATA_DB_NAME")    
+        "database": environ.get("PERSONAL_DATA_DB_NAME")
     }
     connection = mysql.connector.connection.MySQLConnection(**db_config)
 
     return connection
+
+
+def main():
+    """
+    retrieve and fromat data in db
+    """
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+
