@@ -57,7 +57,7 @@ def get_logger() -> logging.Logger:
     user_data = logging.getLogger('user_data')
     user_data.setLevel(logging.INFO)
     stream_handler = logging.StreamHandler()
-    formatter = RedactingFormatter()
+    formatter = RedactingFormatter.format()
     return user_data
 
 
@@ -83,4 +83,14 @@ def main():
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users;")
+    field_names = [i[0] for i in cursor.description]
+
+    logger = get_logger()
+
+    for row in cursor:
+        str_row = ''.join(f'{f}={str(r)}; ' for r, f in zip(row, field_names))
+        logger.info(str_row.strip())
+
+    cursor.close()
+    db.close()
 
