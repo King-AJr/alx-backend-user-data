@@ -67,20 +67,23 @@ class BasicAuth(Auth):
     def extract_user_credentials(self, decoded_base64_authorization_header:
                                  str) -> (str, str):
         """
-        Extract user credentials (username and password) from a decoded Base64-encoded
+        Extract user credentials (username and password) from a decoded
+        Base64-encoded
         authorization header.
 
         Args:
-            decoded_base64_authorization_header (str): The decoded Base64-encoded authorization header.
+            decoded_base64_authorization_header (str): The decoded
+            Base64-encoded authorization header.
 
         Returns:
-            Tuple[str, str]: A tuple containing the extracted username and password, or None if
+            Tuple[str, str]: A tuple containing the extracted username and
+            password, or None if
             the input is invalid or doesn't contain both username and password.
         """
         if decoded_base64_authorization_header is None or not isinstance(
                         decoded_base64_authorization_header, str):
             return None
-    
+
         # Check if the decoded header contains a colon (':') separator
         if decoded_base64_authorization_header.count(":") > 0:
             # Split the decoded header into username and password
@@ -93,4 +96,3 @@ class BasicAuth(Auth):
         else:
             # Return None if there is no colon separator in the input
             return None
-
