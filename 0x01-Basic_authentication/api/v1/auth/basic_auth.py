@@ -8,7 +8,7 @@ Basic Authentication
 from api.v1.auth.auth import Auth
 
 
-class BaicAuth(Auth):
+class BasicAuth(Auth):
     """
     class to implement authentication using
     basic auth algorithm
