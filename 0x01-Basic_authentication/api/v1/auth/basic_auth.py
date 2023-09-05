@@ -99,11 +99,12 @@ class BasicAuth(Auth):
             return (None, None)
 
     def user_object_from_credentials(
-        self, user_email: str, user_password: str) -> TypeVar('User'):
+            self, user_email: str, user_password: str) -> TypeVar('User'):
         """
         Get a User object based on provided credentials.
 
-        This method attempts to retrieve a User object by searching for a user with
+        This method attempts to retrieve
+        a User object by searching for a user with
         the given email
         and validating the provided password.
 
@@ -130,7 +131,7 @@ class BasicAuth(Auth):
             if not users or users == []:
                 return None
 
-            # Iterate through the list of users and check if the password is valid
+            # Iterate through the list of users check if the password is valid
             for user in users:
                 if user.is_valid_password(user_password):
                     return user
@@ -140,3 +141,39 @@ class BasicAuth(Auth):
         except Exception:
             # Handle any exceptions and return None in case of an error
             return None
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Extract the current user from an HTTP request.
+
+        Args:
+            request (Request): The Flask request object (optional).
+
+        Returns:
+            User: The current user if authentication is successful,
+            or None if not.
+        """
+        # Get the authorization header from the request
+        authorization_header = self.authorization_header(request)
+
+        if authorization_header is not None:
+            # Extract the base64-encoded token from the authorization header
+            base64_token = self.extract_base64_authorization_header(
+                    authorization_header)
+
+            if base64_token is not None:
+                # Decode the base64 token to obtain user credentials
+                decoded_credentials = self.decode_base64_authorization_header(
+                        base64_token)
+
+                if decoded_credentials is not None:
+                    # Extract email and password from the decoded credentials
+                    email, password = self.extract_user_credentials(
+                            decoded_credentials)
+
+                    if email is not None:
+                        return self.user_object_from_credentials(
+                                email, password)
+
+        # If any step fails or no user is found, return None
+        return None
