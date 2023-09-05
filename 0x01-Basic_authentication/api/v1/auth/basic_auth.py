@@ -88,7 +88,7 @@ class BasicAuth(Auth):
         # Check if the decoded header contains a colon (':') separator
         if decoded_base64_authorization_header.count(":") > 0:
             # Split the decoded header into username and password
-            splitted_text = decoded_base64_authorization_header.split(":")
+            splitted_text = decoded_base64_authorization_header.split(":", 1)
             if len(splitted_text) == 2:
                 return (splitted_text[0], splitted_text[1])
             else:
