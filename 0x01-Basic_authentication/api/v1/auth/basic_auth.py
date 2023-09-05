@@ -5,6 +5,7 @@ implements methods necessary for Basic Authentication.
 """
 
 from api.v1.auth.auth import Auth
+from typing import TypeVar
 import base64
 
 
@@ -82,7 +83,7 @@ class BasicAuth(Auth):
         """
         if decoded_base64_authorization_header is None or not isinstance(
                         decoded_base64_authorization_header, str):
-            return None
+            return (None, None)
 
         # Check if the decoded header contains a colon (':') separator
         if decoded_base64_authorization_header.count(":") > 0:
@@ -92,7 +93,50 @@ class BasicAuth(Auth):
                 return (splitted_text[0], splitted_text[1])
             else:
                 # Return None if there are more than one colon separators
-                return None
+                return (None, None)
         else:
             # Return None if there is no colon separator in the input
+            return (None, None)
+
+    def user_object_from_credentials(
+        self, user_email: str, user_password: str) -> TypeVar('User'):
+        """
+        Get a User object based on provided credentials.
+
+        This method attempts to retrieve a User object by searching for a user with
+        the given email
+        and validating the provided password.
+
+        Args:
+            self (Auth): The Auth instance.
+            user_email (str): The email address of the user.
+            user_password (str): The user's password.
+
+        Returns:
+            TypeVar('User'): The User object if valid credentials are provided,
+            or None if not found
+            or invalid.
+    """
+        if user_email is None or not isinstance(user_email, str):
+            return None
+        if user_password is None or not isinstance(user_password, str):
+            return None
+
+        try:
+            # Search for users with the provided email
+            users = User.search({"email": user_email})
+
+            # If no users found or the list is empty, return None
+            if not users or users == []:
+                return None
+
+            # Iterate through the list of users and check if the password is valid
+            for user in users:
+                if user.is_valid_password(user_password):
+                    return user
+
+            # If no user with valid credentials is found, return None
+            return None
+        except Exception:
+            # Handle any exceptions and return None in case of an error
             return None
