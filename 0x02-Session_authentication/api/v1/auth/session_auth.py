@@ -58,15 +58,16 @@ class SessionAuth(Auth):
             request (Request): The Flask request object (optional).
 
         Returns:
-            User: The User object representing the current user, or None if not found.
+            User: The User object representing the current user,
+            or None if not found.
         """
         # Get the session cookie value from the request
         cookie = self.session_cookie(request)
-        
+
         # Retrieve the user ID associated with the session ID
         user_id = self.user_id_for_session_id(cookie)
-        
+
         # Get the User object using the retrieved user ID
         user = User.get(user_id)
-        
+
         return user
