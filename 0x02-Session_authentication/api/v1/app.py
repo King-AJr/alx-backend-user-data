@@ -60,8 +60,9 @@ def before_request():
         setattr(request, "current_user", auth.current_user(request))
         excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                           '/api/v1/forbidden/']
+        cookie = auth.session_cookie(request)
         if auth.require_auth(request.path, excluded_paths):
-            if auth.authorization_header(request) is None:
+            if auth.authorization_header(request) is None and cookie is None:
                 error_msg = jsonify({"error": "Unauthorized"})
                 abort(401, error_msg)
             if auth.current_user(request) is None:
