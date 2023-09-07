@@ -20,6 +20,9 @@ if auth_status == 'basic_auth':
 elif auth_status == 'auth':
     from api.v1.auth.auth import Auth
     auth = Auth()
+elif auth_status == 'session_auth':
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 
 
 @app.errorhandler(404)
@@ -42,6 +45,7 @@ def forbidden(error) -> str:
     """
     return jsonify({"error": "Forbidden"}), 403
 
+
 @app.before_request
 def before_request():
     """
@@ -55,7 +59,7 @@ def before_request():
     else:
         setattr(request, "current_user", auth.current_user(request))
         excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                      '/api/v1/forbidden/']
+                          '/api/v1/forbidden/']
         if auth.require_auth(request.path, excluded_paths):
             if auth.authorization_header(request) is None:
                 error_msg = jsonify({"error": "Unauthorized"})
@@ -63,7 +67,6 @@ def before_request():
             if auth.current_user(request) is None:
                 error_msg = jsonify({"errors": "Forbidden"})
                 abort(403, error_msg)
-
 
 
 if __name__ == "__main__":
