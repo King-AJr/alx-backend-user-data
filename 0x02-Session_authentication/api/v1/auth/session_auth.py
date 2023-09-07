@@ -7,6 +7,7 @@ from the `Auth` class in the `api.v1.auth` module.
 from api.v1.auth.auth import Auth  # Import the base Auth class
 from uuid import uuid4  # Import the uuid4 function for generating session IDs
 
+
 class SessionAuth(Auth):
     """
     `SessionAuth` is a subclass of `Auth`, which handles
@@ -29,6 +30,21 @@ class SessionAuth(Auth):
             return None
 
         session_id = str(uuid4())  # Generate a unique session ID
-        self.user_id_by_session_id[session_id] = user_id  # Associate the session with the user
+        self.user_id_by_session_id[session_id] = user_id
         return session_id
 
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """
+        Retrieves the user ID associated with a session ID.
+
+        Args:
+            session_id (str): The session ID for which to retrieve the user ID.
+
+        Returns:
+            str: The user ID associated with session ID or None if not found
+        """
+        if session_id is None or not isinstance(session_id, str):
+            return None
+
+        # Use the get method to retrieve the user ID from the dictionary
+        return self.user_id_by_session_id.get(session_id)
