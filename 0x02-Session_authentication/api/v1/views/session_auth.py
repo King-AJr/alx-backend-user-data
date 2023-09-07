@@ -58,3 +58,14 @@ def session_login():
 
     # If no user with valid credentials is found, return None
     return None
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def logout():
+    """
+    delete user from session
+    """
+    from api.v1.app import auth
+    if auth.destroy_session(request):
+        return jsonify({}), 200
