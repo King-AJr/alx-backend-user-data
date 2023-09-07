@@ -6,6 +6,7 @@ from the `Auth` class in the `api.v1.auth` module.
 
 from api.v1.auth.auth import Auth  # Import the base Auth class
 from uuid import uuid4  # Import the uuid4 function for generating session IDs
+from models.user import User
 
 
 class SessionAuth(Auth):
@@ -48,3 +49,24 @@ class SessionAuth(Auth):
 
         # Use the get method to retrieve the user ID from the dictionary
         return self.user_id_by_session_id.get(session_id)
+
+    def current_user(self, request=None):
+        """
+        Retrieves the current user associated with a session.
+
+        Args:
+            request (Request): The Flask request object (optional).
+
+        Returns:
+            User: The User object representing the current user, or None if not found.
+        """
+        # Get the session cookie value from the request
+        cookie = self.session_cookie(request)
+        
+        # Retrieve the user ID associated with the session ID
+        user_id = self.user_id_for_session_id(cookie)
+        
+        # Get the User object using the retrieved user ID
+        user = User.get(user_id)
+        
+        return user
