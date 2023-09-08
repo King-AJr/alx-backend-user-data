@@ -1,6 +1,12 @@
+#!/usr/bin/env python3
+"""
+implement expiration of sessions
+"""
+
 from api.v1.auth.session_auth import SessionAuth
 from datetime import datetime, timedelta
 from os import getenv
+
 
 class SessionExpAuth(SessionAuth):
     """
@@ -62,7 +68,8 @@ class SessionExpAuth(SessionAuth):
             session_id (str): The session ID for which to retrieve the user ID.
 
         Returns:
-            str: The user ID associated with the session ID or None if not found.
+            str: The user ID associated with the session ID
+            or None if not found.
         """
         if session_id is None:
             return None
@@ -86,4 +93,3 @@ class SessionExpAuth(SessionAuth):
             return None
 
         return session_dict.get("user_id")
-
