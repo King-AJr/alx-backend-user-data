@@ -82,3 +82,38 @@ class DB:
 
         # Return the found user
         return user
+
+    def update_user(self, id: int, **kwargs) -> None:
+        """
+        Update user information in the database based on the
+        provided user ID and keyword arguments.
+
+        Args:
+            id (int): The ID of the user to be updated.
+            **kwargs: Keyword arguments representing fields
+            and their new values to update.
+
+        Raises:
+            ValueError: If a provided field (key) in kwargs
+            does not exist in the user object.
+
+        Returns:
+            None: This function does not return a value
+            explicitly but updates the user information in the database.
+        """
+        if id:
+            # Find the user in the database by ID
+            user = self.find_user_by(id=id)
+
+            # Iterate through keyword arguments (kwargs)
+            for k, v in kwargs.items():
+                # Check if the user object has an attribute
+                # matching the provided field (k)
+                if not hasattr(user, k):
+                    raise ValueError
+
+                # Update the user's attribute with the new value (v)
+                setattr(user, k, v)
+
+            # Commit the changes to the database
+            self._session.commit()
