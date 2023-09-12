@@ -60,10 +60,11 @@ class Auth:
             creates a new user record, and returns it.
 
         """
-        if email is None or email is "" or email is not\
-            isinstance(email, str) or password is None or password is ""\
-                or password is not isinstance(password, str):
+        if email is None or email == "" or not isinstance(email, str) or\
+           password is None or password == "" or not\
+           isinstance(password, str):
             raise ValueError
+
         try:
             # Check if a user with the same email already
             # exists in the database
