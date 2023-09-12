@@ -4,6 +4,7 @@ module to handle authentication
 """
 from bcrypt import hashpw, gensalt
 from sqlalchemy.exc import NoResultFound
+from typing import Union
 
 from db import DB
 from user import User
@@ -37,7 +38,7 @@ class Auth:
     def __init__(self):
         self._db = DB()
 
-    def register_user(self, email: str, password: str) -> User:
+    def register_user(self, email: str, password: str) -> Union[None, User]:
         """
         Registers a new user with the given email and password.
 
@@ -59,8 +60,9 @@ class Auth:
             creates a new user record, and returns it.
 
         """
-        if email is None or not isinstance(email, str) or\
-        password is None or not isinstance(password, str):
+        if email is None or email is "" or email is not\
+            isinstance(email, str) or password is None or password is ""\
+                or password is not isinstance(password, str):
             raise ValueError
         try:
             # Check if a user with the same email already
