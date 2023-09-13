@@ -5,6 +5,7 @@ module to handle authentication
 from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.exc import NoResultFound
 from typing import Union
+from uuid import uuid4
 
 from db import DB
 from user import User
@@ -92,11 +93,13 @@ class Auth:
         Returns:
             bool: True if the provided credentials are valid; False otherwise.
         """
-        if email == "" or password == "":
-            return False
         try:
+            if email == "" or password == "":
+                return False
+            
             # Attempt to find the user by email
             existing_user = self._db.find_user_by(email=email)
+
             if existing_user:
                 password = password.encode('utf-8')  # Encode the password as bytes
                 # Compare hashed passwords
@@ -106,3 +109,9 @@ class Auth:
         except NoResultFound:
             # Return False if no user found or password doesn't match
             return False
+        
+    def _generate_uuid(self) -> str:
+        """
+        return a string representation of a new UUID
+        """
+        return str(uuid4())
