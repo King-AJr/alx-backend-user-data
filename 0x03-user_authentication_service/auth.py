@@ -68,7 +68,7 @@ class Auth:
         try:
             # Check if a user with the same email already
             # exists in the database
-            existing_user = self._db.find_user_by(email=email)
+            self._db.find_user_by(email=email)
         except NoResultFound:
             # If no user with the provided email is found,
             # proceed to register the new user
@@ -77,4 +77,4 @@ class Auth:
             return new_user
         else:
             # If a user with the same email exists, raise an error
-                raise ValueError("User {} already exists".format(email))
+            raise ValueError("User {} already exists".format(email))
