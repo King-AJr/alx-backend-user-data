@@ -32,11 +32,10 @@ def _hash_password(password: str) -> bytes:
     return hashed_pwd
 
 def _generate_uuid() -> str:
-        """
-        return a string representation of a new UUID
-        """
-        new_uuid = uuid4()
-        return str(new_uuid)
+    """
+    return a string representation of a new UUID
+    """
+    return str(uuid4())
 
 
 class Auth:
