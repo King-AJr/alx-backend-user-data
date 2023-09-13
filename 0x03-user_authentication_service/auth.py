@@ -31,6 +31,7 @@ def _hash_password(password: str) -> bytes:
     # Return the hashed password as bytes
     return hashed_pwd
 
+
 def _generate_uuid() -> str:
     """
     return a string representation of a new UUID
@@ -87,7 +88,6 @@ class Auth:
             raise ValueError("User {} already exists".format(email))
 
     def valid_login(self, email: str, password: str) -> bool:
-        
         """
         Validate a user's login credentials.
 
@@ -102,12 +102,13 @@ class Auth:
         try:
             if email == "" or password == "":
                 return False
-            
+
             # Attempt to find the user by email
             existing_user = self._db.find_user_by(email=email)
 
             if existing_user:
-                password = password.encode('utf-8')  # Encode the password as bytes
+                # Encode the password as bytes
+                password = password.encode('utf-8')
                 # Compare hashed passwords
                 valid_pwd = checkpw(password, existing_user.hashed_password)
                 # Return True if passwords match
