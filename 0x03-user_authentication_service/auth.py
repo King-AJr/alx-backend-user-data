@@ -2,7 +2,7 @@
 """
 module to handle authentication
 """
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.exc import NoResultFound
 from typing import Union
 
@@ -78,3 +78,28 @@ class Auth:
         else:
             # If a user with the same email exists, raise an error
             raise ValueError("User {} already exists".format(email))
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Validate a user's login credentials.
+
+        Args:
+            self (object): The instance of the Auth class.
+            email (str): The email address entered by the user.
+            password (str): The password entered by the user.
+
+        Returns:
+            bool: True if the provided credentials are valid; False otherwise.
+        """
+        password = password.encode('utf-8')  # Encode the password as bytes
+        try:
+            # Attempt to find the user by email
+            existing_user = self._db.find_user_by(email=email)
+            if existing_user:
+                # Compare hashed passwords
+                valid_pwd = checkpw(password, existing_user.hashed_password)
+                # Return True if passwords match
+                return valid_pwd
+        except NoResultFound:
+            # Return False if no user found or password doesn't match
+            return False
