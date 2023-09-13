@@ -11,7 +11,7 @@ auth = Auth()
 
 try:
     user = auth.register_user(email, password)
-    print("successfully created a new user!")
+    print(user.hashed_password)
 except ValueError as err:
     print("could not create a new user: {}".format(err))
 
