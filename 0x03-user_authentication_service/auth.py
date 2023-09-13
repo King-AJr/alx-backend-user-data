@@ -80,6 +80,7 @@ class Auth:
             raise ValueError("User {} already exists".format(email))
 
     def valid_login(self, email: str, password: str) -> bool:
+        
         """
         Validate a user's login credentials.
 
@@ -91,11 +92,13 @@ class Auth:
         Returns:
             bool: True if the provided credentials are valid; False otherwise.
         """
-        password = password.encode('utf-8')  # Encode the password as bytes
+        if email == "" or password == "":
+            return False
         try:
             # Attempt to find the user by email
             existing_user = self._db.find_user_by(email=email)
             if existing_user:
+                password = password.encode('utf-8')  # Encode the password as bytes
                 # Compare hashed passwords
                 valid_pwd = checkpw(password, existing_user.hashed_password)
                 # Return True if passwords match
