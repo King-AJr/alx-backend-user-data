@@ -96,7 +96,7 @@ def logout():
     user = AUTH.get_user_from_session_id(cookie_value)
     if user:
         del user.session_id
-        return redirect(url_for('/'))
+        return redirect('/')
     else:
         abort(403)
 
