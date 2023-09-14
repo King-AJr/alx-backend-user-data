@@ -153,7 +153,7 @@ class Auth:
         except NoResultFound:
             # Return None if no user with the provided email is found
             return None
-        
+
     def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
         if session_id is None:
             return None
@@ -173,7 +173,7 @@ class Auth:
                 return None
         except NoResultFound:
             return None
-    
+
     def get_reset_password_token(self, email: str) -> str:
         try:
             user = self._db.find_user_by(email=email)
@@ -182,7 +182,7 @@ class Auth:
             return user.reset_token
         except NoResultFound:
             raise ValueError
-        
+
     def update_password(self, reset_token: str, password: str) -> None:
         try:
             user = self._db.find_user_by(reset_token=reset_token)

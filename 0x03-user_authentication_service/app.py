@@ -2,7 +2,7 @@
 """
 Route module for the API
 """
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect, url_for
 from auth import Auth
 
 
@@ -48,22 +48,21 @@ def users():
         # Attempt to register a new user with the provided email and password
         AUTH.register_user(email, password)
 
-        # If registration is successful, return a JSON response with success
-        # message
+        # If registration is successful, return a JSON
+        # response with success message
         return jsonify({"email": "{}".format(email),
                         "message": "user created"}), 200
     except ValueError:
         # If a ValueError is raised (e.g., due to a duplicate email), return an
         # error response
         return jsonify({"message": "email already registered"}), 400
-    #575a8c98-6650-4bae-a983-0f67310742f7
 
 
 @app.route("/sessions", methods=["POST"])
 def login():
     """
     function that logs user into the server and
-    returns a session id 
+    returns a session id
     """
     email = request.form.get("email")
     password = request.form.get("password")
@@ -89,23 +88,25 @@ def login():
     else:
         abort(401)
 
-#task 14 - install requests package
-# @app.route("/sessions", methods=["DELETE"])
-# def logout():
-#     cookie_value = request.cookies.get("session_id")
-#     user = AUTH.get_user_from_session_id(cookie_value)
-#     if user:
-#         del user.session_id
-#         requests.redirect("/")
-#     else:
-#         abort(403)
+
+# task 14 - install requests package
+@app.route("/sessions", methods=["DELETE"])
+def logout():
+    cookie_value = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(cookie_value)
+    if user:
+        del user.session_id
+        return redirect(url_for('/'))
+    else:
+        abort(403)
+
 
 @app.route("/profile", methods=["GET"])
 def profile():
     cookie_value = request.cookies.get("session_id")
-    print('session_id', cookie_value)
+    print("session_id", cookie_value)
     user = AUTH.get_user_from_session_id(cookie_value)
-    
+
     if user:
         response = jsonify({"email": "{}".format(user.email)}), 200
         return response
@@ -118,10 +119,13 @@ def get_reset_password_token():
     email = request.form.get("email")
     try:
         reset_token = AUTH.get_reset_password_token(email)
-        return jsonify({"email": "{}".format(email),
-                        "reset_token": "{}".format(reset_token)})
+        return jsonify(
+            {"email": "{}".format(email), "reset_token":
+             "{}".format(reset_token)}
+        )
     except ValueError:
         abort(403)
+
 
 @app.route("/reset_password", methods=["PUT"])
 def update_password():
@@ -137,6 +141,7 @@ def update_password():
                         "message": "Password updated"})
     except ValueError:
         abort(403)
+
 
 if __name__ == "__main__":
     app.debug = True
