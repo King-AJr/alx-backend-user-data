@@ -2,6 +2,7 @@
 """
 module to handle authentication
 """
+from flask import jsonify
 from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy.exc import NoResultFound
 from typing import Union
@@ -22,7 +23,7 @@ def _hash_password(password: str) -> bytes:
         bytes: The hashed password as bytes.
     """
     # Encode the password string as bytes using UTF-8 encoding
-    password = password.encode('utf-8')
+    password = password.encode("utf-8")
 
     # Use bcrypt's hashpw function to hash the password with a
     # randomly generated salt
@@ -40,8 +41,7 @@ def _generate_uuid() -> str:
 
 
 class Auth:
-    """Auth class to interact with the authentication database.
-    """
+    """Auth class to interact with the authentication database."""
 
     def __init__(self):
         self._db = DB()
@@ -68,9 +68,14 @@ class Auth:
             creates a new user record, and returns it.
 
         """
-        if email is None or email == "" or not isinstance(email, str) or\
-           password is None or password == "" or not\
-           isinstance(password, str):
+        if (
+            email is None
+            or email == ""
+            or not isinstance(email, str)
+            or password is None
+            or password == ""
+            or not isinstance(password, str)
+        ):
             raise ValueError
 
         try:
@@ -108,7 +113,7 @@ class Auth:
 
             if existing_user:
                 # Encode the password as bytes
-                password = password.encode('utf-8')
+                password = password.encode("utf-8")
                 # Compare hashed passwords
                 valid_pwd = checkpw(password, existing_user.hashed_password)
                 # Return True if passwords match
@@ -148,3 +153,42 @@ class Auth:
         except NoResultFound:
             # Return None if no user with the provided email is found
             return None
+        
+    def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
+        if session_id is None:
+            return None
+        try:
+            user = self._db.find_user_by(session_id=session_id)
+
+            if user:
+                return user
+        except NoResultFound:
+            return None
+
+    def destroy_session(self, user_id: int) -> None:
+        try:
+            user = self._db.find_user_by(id=id)
+            if user:
+                self._db.update_user(user_id, session_id=None)
+                return None
+        except NoResultFound:
+            return None
+    
+    def get_reset_password_token(self, email: str) -> str:
+        try:
+            user = self._db.find_user_by(email=email)
+            reset_token = str(uuid4())
+            self._db.update_user(user.id, reset_token=reset_token)
+            return user.reset_token
+        except NoResultFound:
+            raise ValueError
+        
+    def update_password(self, reset_token: str, password: str) -> None:
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+            hashed_password = _hash_password(password)
+            self._db.update_user(user.id, hashed_password=hashed_password)
+            self._db.update_user(user.id, reset_token=None)
+            return user.reset_token
+        except NoResultFound:
+            raise ValueError
