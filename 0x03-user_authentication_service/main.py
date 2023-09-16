@@ -2,23 +2,39 @@
 """
 Main file
 """
-from db import DB
-from user import User
+import inspect
+from auth import _hash_password
 
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.orm.exc import NoResultFound
+print(_hash_password("Hello Holberton"))
 
 
-my_db = DB()
 
-email = 'test@test.com'
-hashed_password = "hashedPwd"
+def check_annotations(target_function):
+    signature = inspect.signature(target_function)
+    params = signature.parameters
+    annotated_params = []
+    return_annotation = None
 
-user = my_db.add_user(email, hashed_password)
-print(user.id)
+    for param_name, param in params.items():
+        if param.annotation != param.empty:
+            annotated_params.append(param_name)
 
-try:
-    my_db.update_user(user.id, hashed_password='NewPwd')
-    print("Password updated")
-except ValueError:
-    print("Error")
+    if target_function.__annotations__:
+        return_annotation = target_function.__annotations__.get('return', None)
+
+    message = f"{len(annotated_params)} {'thing' if len(annotated_params) == 1 else 'things'} have been annotated\n"
+
+    for param_name in annotated_params:
+        param_annotation = target_function.__annotations__.get(param_name, None)
+        message += f"parameter {param_name} is annotated as a '{param_annotation.__name__}'\n"
+
+    if return_annotation is not None:
+        message += f"function returns a '{return_annotation.__name__}'"
+
+    return message
+
+    return a + len(b)
+
+result = check_annotations(_hash_password)
+print(result)
+
