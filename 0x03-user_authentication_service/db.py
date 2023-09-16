@@ -80,7 +80,7 @@ class DB:
         # Return the found user
         return user
 
-    def update_user(self, id: int, **kwargs) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """
         Update user information in the database based on the
         provided user ID and keyword arguments.
@@ -100,7 +100,7 @@ class DB:
         """
         if id:
             # Find the user in the database by ID
-            user = self.find_user_by(id=id)
+            user = self.find_user_by(id=user_id)
 
             # Iterate through keyword arguments (kwargs)
             for k, v in kwargs.items():

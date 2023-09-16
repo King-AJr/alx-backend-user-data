@@ -2,15 +2,23 @@
 """
 Main file
 """
-from auth import Auth
+from db import DB
+from user import User
 
-email = "bob@bob.com"
-password = "MyPwdOfBob"
-auth = Auth()
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 
-auth.register_user(email, password)
 
-reset_pass = auth.get_reset_password_token(email)
-print(reset_pass)
-password = "retwdgf"
-print(auth.update_password(reset_pass, password))
+my_db = DB()
+
+email = 'test@test.com'
+hashed_password = "hashedPwd"
+
+user = my_db.add_user(email, hashed_password)
+print(user.id)
+
+try:
+    my_db.update_user(user.id, hashed_password='NewPwd')
+    print("Password updated")
+except ValueError:
+    print("Error")
