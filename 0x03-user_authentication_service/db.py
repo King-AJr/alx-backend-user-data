@@ -111,6 +111,7 @@ class DB:
 
                 # Update the user's attribute with the new value (v)
                 setattr(user, k, v)
+                return None
 
             # Commit the changes to the database
             self._session.commit()
